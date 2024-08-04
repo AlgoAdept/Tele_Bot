@@ -1,17 +1,19 @@
-import telegram.ext
-from dotenv import load_dotenv
-import os
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes
 
 # Load the bot token from the .env file
+import os
+from dotenv import load_dotenv
+
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
 
-# Define command handlers
-def start(update, context):
-    update.message.reply_text("Hello! Welcome to the Vincenzo K-Drama Bot. Type /help to see available commands.")
+# Define command handlers with updated method signatures
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("Hello! Welcome to the Vincenzo K-Drama Bot. Type /help to see available commands.")
 
-def helps(update, context):
-    update.message.reply_text("""
+async def helps(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("""
     Hello There!
     I'm a chatbot providing information about the Vincenzo K-Drama.
     Here are some commands you can use:
@@ -28,8 +30,8 @@ def helps(update, context):
     Hope this helps you enjoy the show!
     """)
 
-def info(update, context):
-    update.message.reply_text("""
+async def info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("""
     **Plot Synopsis:**
 
     Vincenzo Cassano (Song Joong-Ki) is a Korean-Italian lawyer who works for the mafia as a consigliere. 
@@ -38,12 +40,10 @@ def info(update, context):
 
     *Plot Image:* 
     """)
-    context.bot.send_photo(chat_id=update.message.chat_id, photo='https://asianwiki.com/images/0/01/Vincenzo-KD-p1.jpg', caption="Vincenzo K-Drama Plot")
+    await context.bot.send_photo(chat_id=update.message.chat_id, photo='https://asianwiki.com/images/0/01/Vincenzo-KD-p1.jpg', caption="Vincenzo K-Drama Plot")
 
-
-def cast(update, context):
-    # Text description of the cast
-    update.message.reply_text("""
+async def cast(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("""
     **Main Cast:**
 
     - *Song Joong-Ki* as Vincenzo Cassano
@@ -53,18 +53,17 @@ def cast(update, context):
     - *Kang Bu-ja* as Hong Yu-chan
     """)
 
-
-def episodes(update, context):
-    update.message.reply_text("""
+async def episodes(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("""
     **Episodes Information:**
 
     The show consists of 20 episodes in total, with each episode running for approximately 70 minutes. 
     The drama aired from February 20, 2021, to May 2, 2021.
     """)
-    context.bot.send_photo(chat_id=update.message.chat_id, photo='https://asianwiki.com/images/7/75/Vincenzo_Episodes.jpg', caption="Episodes Details")
+    await context.bot.send_photo(chat_id=update.message.chat_id, photo='https://asianwiki.com/images/7/75/Vincenzo_Episodes.jpg', caption="Episodes Details")
 
-def characters(update, context):
-    update.message.reply_text("""
+async def characters(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("""
     **Main Characters:**
 
     - *Vincenzo Cassano* (Song Joong-Ki): A Korean-Italian mafia lawyer who seeks justice in his own way.
@@ -72,20 +71,19 @@ def characters(update, context):
     - *Jang Jun-Woo* (Ok Taec-Yeon): A young CEO with hidden agendas.
     - *Choi Myung-Hee* (Kim Yeo-Jin): A villainous attorney involved with the mafia.
     """)
-    context.bot.send_photo(chat_id=update.message.chat_id, photo='https://asianwiki.com/images/5/55/Vincenzo_Characters.jpg', caption="Main Characters")
+    await context.bot.send_photo(chat_id=update.message.chat_id, photo='https://asianwiki.com/images/5/55/Vincenzo_Characters.jpg', caption="Main Characters")
 
-def quotes(update, context):
-    update.message.reply_text("""
+async def quotes(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("""
     **Famous Quotes:**
 
     - "You either die a hero, or you live long enough to see yourself become the villain."
     - "In this world, it's not enough to be right. You have to be ready to fight."
     - "Justice isn't something you can just talk about; it's something you have to fight for."
     """)
-    context.bot.send_photo(chat_id=update.message.chat_id, photo='https://asianwiki.com/images/4/4b/Vincenzo_Quotes.jpg', caption="Quotes from Vincenzo")
+    await context.bot.send_photo(chat_id=update.message.chat_id, photo='https://asianwiki.com/images/4/4b/Vincenzo_Quotes.jpg', caption="Quotes from Vincenzo")
 
-def dubbed_episodes(update, context):
-    # List of episodes with their Hindi dubbed links
+async def dubbed_episodes(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     episodes_in_hindi = {
         "Episode 1": "https://momerybox.com/s/1QaKeYblZw5Mi4YgZHkZsTA",
         "Episode 2": "https://momerybox.com/s/1_EfidvfSjQm580Mh8_TcvA",
@@ -113,22 +111,20 @@ def dubbed_episodes(update, context):
     for episode, link in episodes_in_hindi.items():
         response += f"{episode}: [Watch here]({link})\n"
 
-    update.message.reply_text(response, parse_mode=telegram.ParseMode.MARKDOWN)
+    await update.message.reply_text(response, parse_mode='Markdown')
 
-# Create the updater and dispatcher
-updater = telegram.ext.Updater(TOKEN, use_context=True)
-dispatcher = updater.dispatcher
+# Create the Application and pass the bot token
+application = Application.builder().token(TOKEN).build()
 
 # Add handlers for commands
-dispatcher.add_handler(telegram.ext.CommandHandler('start', start))
-dispatcher.add_handler(telegram.ext.CommandHandler('help', helps))
-dispatcher.add_handler(telegram.ext.CommandHandler('info', info))
-dispatcher.add_handler(telegram.ext.CommandHandler('cast', cast))
-dispatcher.add_handler(telegram.ext.CommandHandler('episodes', episodes))
-dispatcher.add_handler(telegram.ext.CommandHandler('characters', characters))
-dispatcher.add_handler(telegram.ext.CommandHandler('quotes', quotes))
-dispatcher.add_handler(telegram.ext.CommandHandler('dubbed_episodes', dubbed_episodes))
+application.add_handler(CommandHandler('start', start))
+application.add_handler(CommandHandler('help', helps))
+application.add_handler(CommandHandler('info', info))
+application.add_handler(CommandHandler('cast', cast))
+application.add_handler(CommandHandler('episodes', episodes))
+application.add_handler(CommandHandler('characters', characters))
+application.add_handler(CommandHandler('quotes', quotes))
+application.add_handler(CommandHandler('dubbed_episodes', dubbed_episodes))
 
-# Start polling
-updater.start_polling()
-updater.idle()
+# Start the bot
+application.run_polling()
